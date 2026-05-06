@@ -1,0 +1,15 @@
+{
+  "name": "growth-forge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "find": "node agent/find.js",
+    "score": "node agent/score.js",
+    "enrich": "node agent/enrich.js",
+    "draft": "node agent/draft.js",
+    "send": "node agent/send.js",
+    "track": "node agent/track.js",
+    "run": "node agent/index.js"
+  }
+}
