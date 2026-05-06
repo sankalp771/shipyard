@@ -1,25 +1,71 @@
 const GITHUB_SEARCH_TERMS = [
   '"video ai"',
   '"audio ai"',
+  '"speech to text"',
+  '"media processing"',
   "whisper",
   "transcription",
-  "streaming",
   "ffmpeg",
   "podcast",
+  "text-to-speech",
 ];
 
-const HN_TERMS = ["video", "audio", "ffmpeg", "transcription", "podcast", "streaming", "whisper"];
+const HN_TERMS = [
+  "video",
+  "audio",
+  "ffmpeg",
+  "transcription",
+  "podcast",
+  "streaming",
+  "whisper",
+  "speech",
+  "tts",
+];
+
+const REDDIT_SIGNAL_TERMS = [
+  "just shipped",
+  "launched",
+  "built",
+  "released",
+  "open sourced",
+  "open-sourced",
+  "showing",
+];
 
 const REDDIT_SUBREDDITS = ["MachineLearning", "LocalLLaMA", "SideProject", "OpenAI"];
+const MAX_SIGNAL_AGE_HOURS = 72;
+
+function maxSignalAgeDate() {
+  return new Date(Date.now() - MAX_SIGNAL_AGE_HOURS * 60 * 60 * 1000);
+}
 
 function textHasAny(text, terms) {
   const haystack = String(text || "").toLowerCase();
   return terms.some((term) => haystack.includes(term.toLowerCase()));
 }
 
+function textHasAll(text, terms) {
+  const haystack = String(text || "").toLowerCase();
+  return terms.every((term) => haystack.includes(term.toLowerCase()));
+}
+
+function isRecent(isoDate) {
+  const value = new Date(isoDate);
+  return !Number.isNaN(value.getTime()) && value >= maxSignalAgeDate();
+}
+
+function normalizeSummary(text, maxLength = 700) {
+  return String(text || "").replace(/\s+/g, " ").trim().slice(0, maxLength);
+}
+
+function hasMediaBuilderSignal(text) {
+  return textHasAny(text, HN_TERMS);
+}
+
 export async function fetchHackerNewsSignals() {
-  const query = encodeURIComponent(HN_TERMS.join(" OR "));
-  const url = `https://hn.algolia.com/api/v1/search_by_date?tags=show_hn&query=${query}&hitsPerPage=30`;
+  const query = encodeURIComponent("(video OR audio OR whisper OR ffmpeg OR transcription OR podcast OR speech)");
+  const afterEpoch = Math.floor(maxSignalAgeDate().getTime() / 1000);
+  const url = `https://hn.algolia.com/api/v1/search_by_date?tags=show_hn&query=${query}&numericFilters=created_at_i>${afterEpoch}&hitsPerPage=50`;
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`HN fetch failed: ${response.status}`);
@@ -27,7 +73,10 @@ export async function fetchHackerNewsSignals() {
 
   const data = await response.json();
   return (data.hits || [])
-    .filter((hit) => textHasAny(`${hit.title} ${hit.story_text || ""}`, HN_TERMS))
+    .filter((hit) => {
+      const text = `${hit.title || ""} ${hit.story_text || ""}`;
+      return isRecent(hit.created_at) && hasMediaBuilderSignal(text);
+    })
     .map((hit) => ({
       source: "hackernews",
       sourceId: String(hit.objectID),
@@ -36,7 +85,7 @@ export async function fetchHackerNewsSignals() {
       url: hit.url || `https://news.ycombinator.com/item?id=${hit.objectID}`,
       repo: "",
       repoUrl: "",
-      summary: hit.story_text || hit.title,
+      summary: normalizeSummary(hit.story_text || hit.title),
       signalMetrics: {
         points: hit.points || 0,
         comments: hit.num_comments || 0,
@@ -55,7 +104,8 @@ export async function fetchGithubSignals(token) {
   const results = [];
 
   for (const term of GITHUB_SEARCH_TERMS) {
-    const query = encodeURIComponent(`${term} in:name,description,readme pushed:>2026-04-01`);
+    const pushedAfter = maxSignalAgeDate().toISOString().slice(0, 10);
+    const query = encodeURIComponent(`${term} in:name,description,readme pushed:>=${pushedAfter} archived:false fork:false`);
     const url = `https://api.github.com/search/repositories?q=${query}&sort=updated&order=desc&per_page=10`;
     const response = await fetch(url, { headers });
     if (!response.ok) {
@@ -68,6 +118,11 @@ export async function fetchGithubSignals(token) {
         continue;
       }
       seen.add(repo.id);
+      const text = `${repo.name || ""} ${repo.description || ""}`;
+      if (!hasMediaBuilderSignal(text)) {
+        continue;
+      }
+
       results.push({
         source: "github",
         sourceId: String(repo.id),
@@ -76,12 +131,13 @@ export async function fetchGithubSignals(token) {
         url: repo.html_url,
         repo: repo.full_name,
         repoUrl: repo.html_url,
-        summary: repo.description || "",
+        summary: normalizeSummary(repo.description || ""),
         language: repo.language || "",
         signalMetrics: {
           stars: repo.stargazers_count || 0,
           forks: repo.forks_count || 0,
           openIssues: repo.open_issues_count || 0,
+          watchers: repo.watchers_count || 0,
         },
         discoveredAt: repo.updated_at,
       });
@@ -110,7 +166,15 @@ export async function fetchRedditSignals() {
     for (const child of data.data?.children || []) {
       const post = child.data;
       const text = `${post.title || ""} ${post.selftext || ""}`;
-      if (!textHasAny(text, ["just shipped", "launched", "built", ...HN_TERMS])) {
+      if (!isRecent(new Date((post.created_utc || 0) * 1000).toISOString())) {
+        continue;
+      }
+
+      if (!textHasAny(text, REDDIT_SIGNAL_TERMS) || !hasMediaBuilderSignal(text)) {
+        continue;
+      }
+
+      if (textHasAll(text, ["hiring", "job"])) {
         continue;
       }
 
@@ -122,10 +186,11 @@ export async function fetchRedditSignals() {
         url: `https://www.reddit.com${post.permalink}`,
         repo: "",
         repoUrl: "",
-        summary: post.selftext || post.title,
+        summary: normalizeSummary(post.selftext || post.title),
         signalMetrics: {
           score: post.score || 0,
           comments: post.num_comments || 0,
+          upvoteRatio: post.upvote_ratio || 0,
         },
         discoveredAt: new Date((post.created_utc || 0) * 1000).toISOString(),
       });

@@ -1,6 +1,8 @@
 import { latestFile, readJson, writeJson } from "./lib/utils.js";
 
 const PROBLEM_TERMS = ["search", "transcription", "audio", "video", "stream", "media", "whisper", "index"];
+const HIGH_INTENT_TERMS = ["shipped", "launched", "released", "open source", "open-source", "show hn", "demo"];
+const CODE_TERMS = ["api", "sdk", "repo", "github", "pipeline", "app", "tool"];
 
 function includesAny(text, terms) {
   const haystack = String(text || "").toLowerCase();
@@ -14,6 +16,14 @@ function scoreLead(item) {
     score += 3;
   }
 
+  if (includesAny(`${item.title} ${item.summary}`, HIGH_INTENT_TERMS)) {
+    score += 2;
+  }
+
+  if (includesAny(`${item.title} ${item.summary}`, CODE_TERMS)) {
+    score += 1;
+  }
+
   if (includesAny(item.language, ["python", "typescript", "javascript", "go", "rust"])) {
     score += 1;
   }
@@ -24,6 +34,10 @@ function scoreLead(item) {
   }
 
   if ((metrics.forks || 0) > 0 || (metrics.comments || 0) > 0) {
+    score += 1;
+  }
+
+  if ((metrics.watchers || 0) > 0 || (metrics.upvoteRatio || 0) >= 0.8) {
     score += 1;
   }
 
