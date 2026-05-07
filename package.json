@@ -10,6 +10,7 @@
     "draft": "node agent/draft.js",
     "send": "node agent/send.js",
     "track": "node agent/track.js",
+    "report": "node agent/report.js",
     "run": "node agent/index.js"
   }
 }

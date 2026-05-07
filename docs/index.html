@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Growth Agent Log</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0b1220; --panel:#101a2d; --text:#e6edf7; --muted:#9eb0cb; --accent:#6ee7b7; --line:#22304b; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:ui-sans-serif,system-ui,sans-serif; background:linear-gradient(180deg,#0b1220,#0f172a); color:var(--text); }
+    .wrap { max-width:1100px; margin:0 auto; padding:32px 20px 60px; }
+    h1,h2 { margin:0 0 12px; }
+    p { color:var(--muted); }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:20px 0 28px; }
+    .card { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px; }
+    .big { font-size:28px; font-weight:700; color:var(--accent); }
+    table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:16px; overflow:hidden; }
+    th,td { text-align:left; padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+    th { color:var(--muted); font-weight:600; }
+    a { color:#93c5fd; text-decoration:none; }
+    .section { margin-top:28px; }
+    .runs a { display:inline-block; margin:6px 10px 0 0; padding:8px 12px; border:1px solid var(--line); border-radius:999px; background:var(--panel); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Growth Agent Log</h1>
+    <p>Static run history and outreach audit trail for the Shipyard Scanner pipeline.</p>
+
+    <div class="grid">
+      <div class="card"><div>Run ID</div><div class="big">2026-05-07T06-30-31-737Z</div></div>
+      <div class="card"><div>Total leads</div><div class="big">5</div></div>
+      <div class="card"><div>Qualified</div><div class="big">5</div></div>
+      <div class="card"><div>Sent</div><div class="big">3</div></div>
+      <div class="card"><div>Skipped</div><div class="big">2</div></div>
+    </div>
+
+    <div class="card">
+      <strong>Sources</strong>
+      <p>GitHub: 24 · Hacker News: 0 · Reddit: 3</p>
+      <p>Generated at: 2026-05-07T06:30:39.121Z</p>
+    </div>
+
+    <div class="section">
+      <h2>Latest Run</h2>
+      <table>
+        <thead>
+          <tr><th>Developer</th><th>Repo/Source</th><th>Score</th><th>Status</th><th>Reason</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>harry0703</td>
+          <td>harry0703/MoneyPrinterTurbo</td>
+          <td>10</td>
+          <td>skipped</td>
+          <td>No open issue or discussion target found</td>
+        </tr>
+        <tr>
+          <td>mudler</td>
+          <td>mudler/LocalAI</td>
+          <td>10</td>
+          <td>sent</td>
+          <td>github</td>
+        </tr>
+        <tr>
+          <td>nexu-io</td>
+          <td>nexu-io/open-design</td>
+          <td>10</td>
+          <td>sent</td>
+          <td>github</td>
+        </tr>
+        <tr>
+          <td>Augani</td>
+          <td>Augani/openreel-video</td>
+          <td>10</td>
+          <td>sent</td>
+          <td>github</td>
+        </tr>
+        <tr>
+          <td>Knuckles92</td>
+          <td>Knuckles92/OpenWhisper</td>
+          <td>10</td>
+          <td>skipped</td>
+          <td>Live send limit reached (3)</td>
+        </tr></tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Contact Memory</h2>
+      <table>
+        <thead>
+          <tr><th>Sent At</th><th>Developer</th><th>Repo</th><th>Channel</th><th>Target</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>2026-05-07T06:30:39.121Z</td>
+          <td>Augani</td>
+          <td>Augani/openreel-video</td>
+          <td>github</td>
+          <td><a href="https://github.com/Augani/openreel-video/issues/35">link</a></td>
+        </tr>
+        <tr>
+          <td>2026-05-07T06:30:39.121Z</td>
+          <td>nexu-io</td>
+          <td>nexu-io/open-design</td>
+          <td>github</td>
+          <td><a href="https://github.com/nexu-io/open-design/issues/758">link</a></td>
+        </tr>
+        <tr>
+          <td>2026-05-07T06:30:39.121Z</td>
+          <td>mudler</td>
+          <td>mudler/LocalAI</td>
+          <td>github</td>
+          <td><a href="https://github.com/mudler/LocalAI/issues/9704">link</a></td>
+        </tr>
+        <tr>
+          <td>2026-05-06T15:21:31.004Z</td>
+          <td>dsd2077</td>
+          <td>dsd2077/CyberVerse</td>
+          <td>github</td>
+          <td><a href="https://github.com/dsd2077/CyberVerse/issues/7">link</a></td>
+        </tr></tbody>
+      </table>
+    </div>
+
+    <div class="section runs">
+      <h2>Run Files</h2>
+      <a href="./runs/2026-05-06T07-51-59-224Z.json">2026-05-06T07-51-59-224Z</a><a href="./runs/2026-05-06T15-21-23-843Z.json">2026-05-06T15-21-23-843Z</a><a href="./runs/2026-05-07T06-30-31-737Z.json">2026-05-07T06-30-31-737Z</a>
+    </div>
+  </div>
+</body>
+</html>

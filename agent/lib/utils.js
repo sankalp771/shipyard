@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const dataDir = path.resolve(process.cwd(), "agent", "data");
+const stateDir = path.resolve(process.cwd(), "agent", "state");
 
 export function ensureDataDir() {
   fs.mkdirSync(dataDir, { recursive: true });
@@ -18,6 +19,15 @@ export function runIdFromDate(date = new Date()) {
 export function dataFile(name) {
   ensureDataDir();
   return path.join(dataDir, name);
+}
+
+export function ensureStateDir() {
+  fs.mkdirSync(stateDir, { recursive: true });
+}
+
+export function stateFile(name) {
+  ensureStateDir();
+  return path.join(stateDir, name);
 }
 
 export function writeJson(filePath, value) {
@@ -40,6 +50,15 @@ export function latestFile(prefix) {
   return path.join(dataDir, files[files.length - 1]);
 }
 
+export function listFiles(prefix) {
+  ensureDataDir();
+  return fs
+    .readdirSync(dataDir)
+    .filter((file) => file.startsWith(prefix))
+    .sort()
+    .map((file) => path.join(dataDir, file));
+}
+
 export function slugify(value) {
   return String(value || "")
     .toLowerCase()
@@ -56,4 +75,13 @@ export function buildUtmLink(baseUrl, source, developer, runId) {
   url.searchParams.set("utm_dev", slugify(developer));
   url.searchParams.set("utm_run", runId);
   return url.toString();
+}
+
+export function htmlEscape(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }

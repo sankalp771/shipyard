@@ -11,6 +11,9 @@ Existing docs covered only part of the system:
 - [README.md](D:\Temp\growth_agent\README.md): basic usage and setup
 - [metric/README.md](D:\Temp\growth_agent\metric\README.md): owned metric
 - [attribution/utm-links.md](D:\Temp\growth_agent\attribution\utm-links.md): UTM structure
+- [docs/2026-05-06-update.md](D:\Temp\growth_agent\docs\2026-05-06-update.md): first working pipeline milestone
+- [docs/2026-05-07-update.md](D:\Temp\growth_agent\docs\2026-05-07-update.md): live outreach milestone
+- [docs/deployment-github.md](D:\Temp\growth_agent\docs\deployment-github.md): unattended GitHub deployment plan
 
 This file is the first neat end-to-end explanation of:
 
@@ -315,6 +318,7 @@ Current GitHub send strategy:
 
 - find an open issue in the repo
 - post the drafted message as a comment
+- mention the repo owner directly as `@username` in the final message
 
 Stored under:
 
@@ -357,6 +361,10 @@ Folder:
 
 - [agent/data](D:\Temp\growth_agent\agent\data)
 
+Persistent contact memory:
+
+- `agent/state/contacted.json`
+
 ### File sequence
 
 When you run the full pipeline, files appear in this order:
@@ -391,6 +399,47 @@ When you run the full pipeline, files appear in this order:
 
 - drafted leads plus delivery result
 - in current safe mode this is mostly `dry-run`
+- in live mode this records which GitHub outreach actions actually succeeded
+
+## How fresh outreach is enforced
+
+Freshness is not only about scanning recent repos. It is also about not re-contacting the same people.
+
+The persistent memory lives in:
+
+- `agent/state/contacted.json`
+
+Logic:
+
+- after a successful live send, the contact is stored
+- future sends check this memory before posting
+- if the repo or developer has already been contacted, the system skips them
+
+This means a future scheduled run should prefer net-new people instead of repeatedly hitting the same repo owner.
+
+Current key used for memory:
+
+- repo key when `repo` exists
+- otherwise developer key
+
+## Static HTML logs
+
+Static reporting lives in:
+
+- [report.js](D:\Temp\growth_agent\agent\report.js)
+
+Generated output:
+
+- `docs/index.html`
+- `docs/latest.json`
+- `docs/runs/<runId>.json`
+
+Purpose:
+
+- show the latest run summary
+- show sent vs skipped items
+- show contact-memory history
+- make the project easy to host on GitHub Pages
 
 ### Why you may see different batch sizes
 
@@ -445,6 +494,8 @@ If you want to understand the system quickly:
 
 1. [README.md](D:\Temp\growth_agent\README.md)
 2. [docs/2026-05-06-update.md](D:\Temp\growth_agent\docs\2026-05-06-update.md)
-3. [docs/system-reference.md](D:\Temp\growth_agent\docs\system-reference.md)
-4. [sources.js](D:\Temp\growth_agent\agent\lib\sources.js)
-5. [score.js](D:\Temp\growth_agent\agent\score.js)
+3. [docs/2026-05-07-update.md](D:\Temp\growth_agent\docs\2026-05-07-update.md)
+4. [docs/deployment-github.md](D:\Temp\growth_agent\docs\deployment-github.md)
+5. [docs/system-reference.md](D:\Temp\growth_agent\docs\system-reference.md)
+6. [sources.js](D:\Temp\growth_agent\agent\lib\sources.js)
+7. [score.js](D:\Temp\growth_agent\agent\score.js)

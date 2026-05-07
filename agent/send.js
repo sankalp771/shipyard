@@ -1,4 +1,5 @@
 import { getConfig } from "./lib/config.js";
+import { hasBeenContacted, rememberContact } from "./lib/contacted.js";
 import { createGithubIssueComment, listGithubIssues } from "./lib/github.js";
 import { latestFile, readJson, writeJson } from "./lib/utils.js";
 
@@ -24,6 +25,14 @@ async function sendViaGithub(item, config) {
       channel: "none",
       sent: false,
       reason: "No repository available",
+    };
+  }
+
+  if (hasBeenContacted(item)) {
+    return {
+      channel: "github",
+      sent: false,
+      reason: "Already contacted previously",
     };
   }
 
@@ -74,6 +83,7 @@ async function main() {
         delivery = await sendViaGithub(item, config);
         if (delivery.sent) {
           liveSendCount += 1;
+          rememberContact(item, delivery, drafted.runId);
         }
       }
     }

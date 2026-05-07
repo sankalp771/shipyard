@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 
-const steps = ["find", "score", "enrich", "draft", "send", "track"];
+const steps = ["find", "score", "enrich", "draft", "send", "track", "report"];
 
 function runStep(step) {
   return new Promise((resolve, reject) => {

@@ -1,0 +1,75 @@
+{
+  "runId": "2026-05-07T06-30-31-737Z",
+  "generatedAt": "2026-05-07T06:30:39.121Z",
+  "total": 5,
+  "qualified": 5,
+  "sent": 3,
+  "skipped": 2,
+  "sources": {
+    "hackernews": 0,
+    "github": 24,
+    "reddit": 3
+  },
+  "items": [
+    {
+      "developer": "harry0703",
+      "repo": "harry0703/MoneyPrinterTurbo",
+      "source": "github",
+      "score": 10,
+      "qualified": true,
+      "channel": "github",
+      "sent": false,
+      "reason": "No open issue or discussion target found",
+      "targetUrl": "",
+      "utmLink": "https://videodb.io/?utm_source=github&utm_medium=outreach&utm_campaign=shipyard_scanner&utm_dev=harry0703&utm_run=2026-05-07T06-30-31-737Z"
+    },
+    {
+      "developer": "mudler",
+      "repo": "mudler/LocalAI",
+      "source": "github",
+      "score": 10,
+      "qualified": true,
+      "channel": "github",
+      "sent": true,
+      "reason": "",
+      "targetUrl": "https://github.com/mudler/LocalAI/issues/9704",
+      "utmLink": "https://videodb.io/?utm_source=github&utm_medium=outreach&utm_campaign=shipyard_scanner&utm_dev=mudler&utm_run=2026-05-07T06-30-31-737Z"
+    },
+    {
+      "developer": "nexu-io",
+      "repo": "nexu-io/open-design",
+      "source": "github",
+      "score": 10,
+      "qualified": true,
+      "channel": "github",
+      "sent": true,
+      "reason": "",
+      "targetUrl": "https://github.com/nexu-io/open-design/issues/758",
+      "utmLink": "https://videodb.io/?utm_source=github&utm_medium=outreach&utm_campaign=shipyard_scanner&utm_dev=nexu-io&utm_run=2026-05-07T06-30-31-737Z"
+    },
+    {
+      "developer": "Augani",
+      "repo": "Augani/openreel-video",
+      "source": "github",
+      "score": 10,
+      "qualified": true,
+      "channel": "github",
+      "sent": true,
+      "reason": "",
+      "targetUrl": "https://github.com/Augani/openreel-video/issues/35",
+      "utmLink": "https://videodb.io/?utm_source=github&utm_medium=outreach&utm_campaign=shipyard_scanner&utm_dev=augani&utm_run=2026-05-07T06-30-31-737Z"
+    },
+    {
+      "developer": "Knuckles92",
+      "repo": "Knuckles92/OpenWhisper",
+      "source": "github",
+      "score": 10,
+      "qualified": true,
+      "channel": "github",
+      "sent": false,
+      "reason": "Live send limit reached (3)",
+      "targetUrl": "",
+      "utmLink": "https://videodb.io/?utm_source=github&utm_medium=outreach&utm_campaign=shipyard_scanner&utm_dev=knuckles92&utm_run=2026-05-07T06-30-31-737Z"
+    }
+  ]
+}
