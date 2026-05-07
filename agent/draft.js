@@ -2,6 +2,20 @@ import { getConfig } from "./lib/config.js";
 import { generateMessage } from "./lib/llm.js";
 import { buildUtmLink, latestFile, readJson, writeJson } from "./lib/utils.js";
 
+function ensureGithubMention(item, draft) {
+  if (item.source !== "github" || !item.developer) {
+    return draft.trim();
+  }
+
+  const mention = `@${item.developer}`;
+  const normalized = String(draft || "").trim();
+  if (normalized.startsWith(mention)) {
+    return normalized;
+  }
+
+  return `${mention} ${normalized}`;
+}
+
 function buildPrompt(item, utmLink) {
   return [
     "Write a short technical outreach message to a developer.",
@@ -9,6 +23,7 @@ function buildPrompt(item, utmLink) {
     "- 55 words max",
     "- technical, specific, not salesy",
     "- respectful and useful in a GitHub issue thread",
+    "- start with @developer exactly",
     "- mention what they shipped",
     "- mention one bottleneck VideoDB likely helps with",
     "- include the link exactly once",
@@ -68,7 +83,7 @@ async function main() {
     draftedItems.push({
       ...item,
       utmLink,
-      draft,
+      draft: ensureGithubMention(item, draft),
     });
   }
 
