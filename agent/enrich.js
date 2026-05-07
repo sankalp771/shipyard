@@ -1,6 +1,6 @@
 import { getConfig } from "./lib/config.js";
 import { fetchGithubReadme, fetchGithubRepo, fetchGithubUser } from "./lib/github.js";
-import { latestFile, readJson, writeJson } from "./lib/utils.js";
+import { latestFile, readJson, stageFilePath, writeJson } from "./lib/utils.js";
 
 function safeGithubUsername(item) {
   if (item.source === "github") {
@@ -86,7 +86,7 @@ async function main() {
     items: enrichedItems,
   };
 
-  const outputPath = inputPath.replace("\\scored-", "\\enriched-");
+  const outputPath = stageFilePath(inputPath, "scored-", "enriched-");
   writeJson(outputPath, output);
   console.log(`Saved enriched leads to ${outputPath}`);
 }

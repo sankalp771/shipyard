@@ -1,6 +1,6 @@
 import { getConfig } from "./lib/config.js";
 import { generateMessage } from "./lib/llm.js";
-import { buildUtmLink, latestFile, readJson, writeJson } from "./lib/utils.js";
+import { buildUtmLink, latestFile, readJson, stageFilePath, writeJson } from "./lib/utils.js";
 
 function ensureGithubMention(item, draft) {
   if (item.source !== "github" || !item.developer) {
@@ -92,7 +92,7 @@ async function main() {
     items: draftedItems,
   };
 
-  const outputPath = inputPath.replace("\\enriched-", "\\drafted-");
+  const outputPath = stageFilePath(inputPath, "enriched-", "drafted-");
   writeJson(outputPath, output);
   console.log(`Saved drafted leads to ${outputPath}`);
 }

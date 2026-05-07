@@ -50,6 +50,16 @@ export function latestFile(prefix) {
   return path.join(dataDir, files[files.length - 1]);
 }
 
+export function stageFilePath(inputPath, fromPrefix, toPrefix) {
+  const dir = path.dirname(inputPath);
+  const file = path.basename(inputPath);
+  if (!file.startsWith(fromPrefix)) {
+    throw new Error(`Expected file starting with ${fromPrefix}, got ${file}`);
+  }
+
+  return path.join(dir, `${toPrefix}${file.slice(fromPrefix.length)}`);
+}
+
 export function listFiles(prefix) {
   ensureDataDir();
   return fs

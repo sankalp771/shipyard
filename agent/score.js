@@ -1,4 +1,4 @@
-import { latestFile, readJson, writeJson } from "./lib/utils.js";
+import { latestFile, readJson, stageFilePath, writeJson } from "./lib/utils.js";
 
 const PROBLEM_TERMS = ["search", "transcription", "audio", "video", "stream", "media", "whisper", "index"];
 const HIGH_INTENT_TERMS = ["shipped", "launched", "released", "open source", "open-source", "show hn", "demo"];
@@ -71,7 +71,7 @@ async function main() {
     qualifiedCount: scoredItems.filter((item) => item.qualified).length,
   };
 
-  const outputPath = inputPath.replace("\\raw-", "\\scored-");
+  const outputPath = stageFilePath(inputPath, "raw-", "scored-");
   writeJson(outputPath, output);
   console.log(`Saved scored leads to ${outputPath}`);
   console.log(`Qualified: ${output.qualifiedCount}/${scoredItems.length}`);

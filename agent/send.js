@@ -1,7 +1,7 @@
 import { getConfig } from "./lib/config.js";
 import { hasBeenContacted, rememberContact } from "./lib/contacted.js";
 import { createGithubIssueComment, listGithubIssues } from "./lib/github.js";
-import { latestFile, readJson, writeJson } from "./lib/utils.js";
+import { latestFile, readJson, stageFilePath, writeJson } from "./lib/utils.js";
 
 async function sendViaGithub(item, config) {
   if (item.source !== "github") {
@@ -99,7 +99,7 @@ async function main() {
     items: sentItems,
   };
 
-  const outputPath = inputPath.replace("\\drafted-", "\\sent-");
+  const outputPath = stageFilePath(inputPath, "drafted-", "sent-");
   writeJson(outputPath, output);
   console.log(`Saved send results to ${outputPath}`);
 }
