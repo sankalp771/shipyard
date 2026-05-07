@@ -58,7 +58,23 @@ async function main() {
   }
 
   const scored = readJson(inputPath);
-  const qualified = scored.items.filter((item) => item.qualified).slice(0, 25);
+  const qualified = scored.items
+    .filter((item) => item.qualified)
+    .sort((a, b) => {
+      const scoreDelta = (b.score || 0) - (a.score || 0);
+      if (scoreDelta !== 0) {
+        return scoreDelta;
+      }
+
+      const tractionA = (a.signalMetrics?.stars || 0) + (a.signalMetrics?.watchers || 0);
+      const tractionB = (b.signalMetrics?.stars || 0) + (b.signalMetrics?.watchers || 0);
+      if (tractionB !== tractionA) {
+        return tractionB - tractionA;
+      }
+
+      return String(b.discoveredAt || "").localeCompare(String(a.discoveredAt || ""));
+    })
+    .slice(0, 25);
   const enrichedItems = [];
 
   for (const item of qualified) {

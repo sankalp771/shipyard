@@ -6,12 +6,17 @@ function buildPrompt(item, utmLink) {
   return [
     "Write a short technical outreach message to a developer.",
     "Constraints:",
-    "- 70 words max",
+    "- 55 words max",
     "- technical, specific, not salesy",
+    "- respectful and useful in a GitHub issue thread",
     "- mention what they shipped",
     "- mention one bottleneck VideoDB likely helps with",
     "- include the link exactly once",
-    "- sign off without hard selling",
+    "- no signoff",
+    "- no placeholders",
+    "- no mention of ChatGPT or AI assistant",
+    "- no exaggeration",
+    "- plain text only",
     "",
     `Developer: ${item.developer}`,
     `Source: ${item.source}`,
@@ -32,7 +37,21 @@ async function main() {
   }
 
   const enriched = readJson(inputPath);
-  const items = config.draftLimit > 0 ? enriched.items.slice(0, config.draftLimit) : enriched.items;
+  const rankedItems = [...enriched.items].sort((a, b) => {
+    const scoreDelta = (b.score || 0) - (a.score || 0);
+    if (scoreDelta !== 0) {
+      return scoreDelta;
+    }
+
+    const tractionA = (a.repoStats?.stars || 0) + (a.repoStats?.watchers || 0);
+    const tractionB = (b.repoStats?.stars || 0) + (b.repoStats?.watchers || 0);
+    if (tractionB !== tractionA) {
+      return tractionB - tractionA;
+    }
+
+    return String(b.discoveredAt || "").localeCompare(String(a.discoveredAt || ""));
+  });
+  const items = config.draftLimit > 0 ? rankedItems.slice(0, config.draftLimit) : rankedItems;
   const draftedItems = [];
 
   for (const [index, item] of items.entries()) {

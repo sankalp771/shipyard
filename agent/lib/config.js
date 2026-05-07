@@ -61,5 +61,7 @@ export function getConfig() {
     outreachGithubToken: process.env.OUTREACH_GITHUB_TOKEN || "",
     outreachGithubUsername: process.env.OUTREACH_GITHUB_USERNAME || "",
     draftLimit: Number.parseInt(process.env.DRAFT_LIMIT || "0", 10) || 0,
+    liveSendLimit: Number.parseInt(process.env.LIVE_SEND_LIMIT || "0", 10) || 0,
+    liveSendMinScore: Number.parseInt(process.env.LIVE_SEND_MIN_SCORE || "8", 10) || 8,
   };
 }

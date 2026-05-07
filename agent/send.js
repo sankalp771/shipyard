@@ -3,6 +3,22 @@ import { createGithubIssueComment, listGithubIssues } from "./lib/github.js";
 import { latestFile, readJson, writeJson } from "./lib/utils.js";
 
 async function sendViaGithub(item, config) {
+  if (item.source !== "github") {
+    return {
+      channel: "none",
+      sent: false,
+      reason: "Not a GitHub-sourced lead",
+    };
+  }
+
+  if ((item.score || 0) < config.liveSendMinScore) {
+    return {
+      channel: "github",
+      sent: false,
+      reason: `Score below live-send threshold (${config.liveSendMinScore})`,
+    };
+  }
+
   if (!item.repo) {
     return {
       channel: "none",
@@ -38,6 +54,7 @@ async function main() {
 
   const drafted = readJson(inputPath);
   const sentItems = [];
+  let liveSendCount = 0;
 
   for (const item of drafted.items) {
     let delivery = {
@@ -47,7 +64,18 @@ async function main() {
     };
 
     if (config.enableGithubOutreach && config.outreachGithubToken) {
-      delivery = await sendViaGithub(item, config);
+      if (config.liveSendLimit > 0 && liveSendCount >= config.liveSendLimit) {
+        delivery = {
+          channel: "github",
+          sent: false,
+          reason: `Live send limit reached (${config.liveSendLimit})`,
+        };
+      } else {
+        delivery = await sendViaGithub(item, config);
+        if (delivery.sent) {
+          liveSendCount += 1;
+        }
+      }
     }
 
     sentItems.push({
