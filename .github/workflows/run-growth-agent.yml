@@ -1,0 +1,56 @@
+name: Run Growth Agent
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */12 * * *"
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Write Google service account file
+        shell: bash
+        run: |
+          printf '%s' '${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}' > google-service-account.json
+
+      - name: Create environment file
+        shell: bash
+        run: |
+          cat > .env <<EOF
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          LLM_API_KEY=${{ secrets.LLM_API_KEY }}
+          LLM_API_URL=https://openrouter.ai/api/v1/chat/completions
+          LLM_MODEL=openrouter/free
+          GOOGLE_SERVICE_ACCOUNT_JSON=${{ github.workspace }}/google-service-account.json
+          GOOGLE_SHEET_ID=${{ vars.GOOGLE_SHEET_ID }}
+          VIDEODB_BASE_URL=${{ vars.VIDEODB_BASE_URL }}
+          ENABLE_GITHUB_OUTREACH=true
+          OUTREACH_GITHUB_TOKEN=${{ secrets.OUTREACH_GITHUB_TOKEN }}
+          OUTREACH_GITHUB_USERNAME=${{ vars.OUTREACH_GITHUB_USERNAME }}
+          DRAFT_LIMIT=${{ vars.DRAFT_LIMIT }}
+          LIVE_SEND_LIMIT=${{ vars.LIVE_SEND_LIMIT }}
+          LIVE_SEND_MIN_SCORE=${{ vars.LIVE_SEND_MIN_SCORE }}
+          EOF
+
+      - name: Run growth agent
+        run: npm run run
+
+      - name: Upload latest run artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: growth-agent-run
+          path: |
+            agent/data
+            agent/state
+            docs/latest.json
+            docs/runs
