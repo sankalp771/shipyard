@@ -37,9 +37,9 @@ jobs:
           ENABLE_GITHUB_OUTREACH=true
           OUTREACH_GITHUB_TOKEN=${{ secrets.OUTREACH_GITHUB_TOKEN }}
           OUTREACH_GITHUB_USERNAME=${{ vars.OUTREACH_GITHUB_USERNAME }}
-          DRAFT_LIMIT=${{ vars.DRAFT_LIMIT }}
-          LIVE_SEND_LIMIT=${{ vars.LIVE_SEND_LIMIT }}
-          LIVE_SEND_MIN_SCORE=${{ vars.LIVE_SEND_MIN_SCORE }}
+          DRAFT_LIMIT=${{ vars.DRAFT_LIMIT || '5' }}
+          LIVE_SEND_LIMIT=${{ vars.LIVE_SEND_LIMIT || '3' }}
+          LIVE_SEND_MIN_SCORE=${{ vars.LIVE_SEND_MIN_SCORE || '8' }}
           EOF
 
       - name: Run growth agent

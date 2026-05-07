@@ -152,48 +152,53 @@ export async function fetchRedditSignals() {
 
   for (const subreddit of REDDIT_SUBREDDITS) {
     const url = `https://www.reddit.com/r/${subreddit}/new.json?limit=25`;
-    const response = await fetch(url, {
-      headers: {
-        "User-Agent": "growth-agent",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Reddit fetch failed for ${subreddit}: ${response.status}`);
-    }
-
-    const data = await response.json();
-    for (const child of data.data?.children || []) {
-      const post = child.data;
-      const text = `${post.title || ""} ${post.selftext || ""}`;
-      if (!isRecent(new Date((post.created_utc || 0) * 1000).toISOString())) {
-        continue;
-      }
-
-      if (!textHasAny(text, REDDIT_SIGNAL_TERMS) || !hasMediaBuilderSignal(text)) {
-        continue;
-      }
-
-      if (textHasAll(text, ["hiring", "job"])) {
-        continue;
-      }
-
-      results.push({
-        source: "reddit",
-        sourceId: post.id,
-        developer: post.author,
-        title: post.title,
-        url: `https://www.reddit.com${post.permalink}`,
-        repo: "",
-        repoUrl: "",
-        summary: normalizeSummary(post.selftext || post.title),
-        signalMetrics: {
-          score: post.score || 0,
-          comments: post.num_comments || 0,
-          upvoteRatio: post.upvote_ratio || 0,
+    try {
+      const response = await fetch(url, {
+        headers: {
+          "User-Agent": "growth-agent/1.0",
         },
-        discoveredAt: new Date((post.created_utc || 0) * 1000).toISOString(),
       });
+
+      if (!response.ok) {
+        console.warn(`Reddit fetch skipped for ${subreddit}: ${response.status}`);
+        continue;
+      }
+
+      const data = await response.json();
+      for (const child of data.data?.children || []) {
+        const post = child.data;
+        const text = `${post.title || ""} ${post.selftext || ""}`;
+        if (!isRecent(new Date((post.created_utc || 0) * 1000).toISOString())) {
+          continue;
+        }
+
+        if (!textHasAny(text, REDDIT_SIGNAL_TERMS) || !hasMediaBuilderSignal(text)) {
+          continue;
+        }
+
+        if (textHasAll(text, ["hiring", "job"])) {
+          continue;
+        }
+
+        results.push({
+          source: "reddit",
+          sourceId: post.id,
+          developer: post.author,
+          title: post.title,
+          url: `https://www.reddit.com${post.permalink}`,
+          repo: "",
+          repoUrl: "",
+          summary: normalizeSummary(post.selftext || post.title),
+          signalMetrics: {
+            score: post.score || 0,
+            comments: post.num_comments || 0,
+            upvoteRatio: post.upvote_ratio || 0,
+          },
+          discoveredAt: new Date((post.created_utc || 0) * 1000).toISOString(),
+        });
+      }
+    } catch (error) {
+      console.warn(`Reddit fetch skipped for ${subreddit}: ${error.message}`);
     }
   }
 
